@@ -10,15 +10,36 @@ function SingleNewsComponent() {
 
   useEffect(() => {
     (async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3333/api/news/${routeParams['id']}`
-        );
-        const data = await response.json();
-        setNews(data);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message);
+      //client cache
+      const storage_data = sessionStorage.getItem('cached_news');
+      let cached_news = new Array<News>();
+      if (storage_data) {
+        cached_news = JSON.parse(storage_data);
+      }
+
+      const find_news = cached_news.find(
+        (item) => +item.id === Number(routeParams['id'])
+      );
+
+      if (find_news) {
+        console.log('storage');
+
+        setNews(find_news);
+      } else {
+        console.log('api');
+
+        try {
+          const response = await fetch(
+            `http://localhost:3333/api/news/${routeParams['id']}`
+          );
+          const data = await response.json();
+          setNews(data);
+          cached_news.push(data);
+          sessionStorage.setItem('cached_news', JSON.stringify(cached_news));
+        } catch (error) {
+          if (error instanceof Error) {
+            console.log(error.message);
+          }
         }
       }
     })();
