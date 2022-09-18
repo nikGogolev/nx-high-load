@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFiles,
+  CacheInterceptor,
 } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
@@ -95,11 +96,13 @@ export class NewsController {
   }
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   findAll() {
     return this.newsService.findAll();
   }
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
   findOne(@Param('id') id: string) {
     return this.newsService.findOne(+id);
   }
