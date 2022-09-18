@@ -9,6 +9,7 @@ import { News } from './entities/news.entity';
 @Injectable()
 export class NewsService {
   private news: News[] = [];
+  private cached_news: News[] = [];
 
   create(createNewsDto: CreateNewsDto) {
     const news: News = {
@@ -72,7 +73,20 @@ export class NewsService {
   }
 
   findOne(id: number) {
-    const news: News = this.news.find((news) => news.id === id);
+    let news = new News();
+    //web-server cahe
+    const find_news: News = this.cached_news.find(
+      (item) => +item.id === Number(id)
+    );
+    if (find_news) {
+      console.log('cache');
+      news = find_news;
+    } else {
+      console.log('db');
+      news = this.news.find((news) => news.id === id);
+      this.cached_news.push(news);
+    }
+
     if (!news) {
       throw new NotFoundException();
     }

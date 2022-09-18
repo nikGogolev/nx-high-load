@@ -37,10 +37,7 @@ export function NewsComponent() {
         method: 'POST',
         body: formdata,
       };
-      const response = await fetch(
-        'http://localhost:3333/api/news',
-        requestOptions
-      );
+      await fetch('http://localhost:3333/api/news', requestOptions);
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
